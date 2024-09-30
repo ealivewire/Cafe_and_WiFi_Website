@@ -1,0 +1,93 @@
+{% include "header.html" %}
+
+<!-- Page Header-->
+<header
+  class="masthead"
+  style="background-image: url('../static/assets/img/cafe.jpg')">
+
+  <div class="container position-relative px-4 px-lg-5">
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+      <div class="col-md-10 col-lg-8 col-xl-7">
+        <div class="site-heading">
+          <h1>Cafe and WiFi Website</h1>
+          <span class="subheading">Existing Cafes ({{ cafe_count }} Listings)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="col-lg-8 mx-auto p-4 py-md-5">
+  <h2 style="text-align: center;">Listings are sorted by cafe name.</h2><br>
+  <main>
+    <h5><form>
+         <button style="display: block; margin: auto; background-color:brown; color:white; font-weight:bold" type="submit" formaction="{{url_for('add_cafe')}}"><img src="{{ url_for('static', filename='assets/favicon.ico') }}" width="30rem" height="30rem"> Add New Cafe</button>
+    </form></h5>
+    {% if success %}
+    <table style="width: 100%; margin-left:auto; margin-right:auto">
+      <colgroup>
+          <col span="1" style="width: 5%;">
+          <col span="1" style="width: 5%;">
+          <col span="1" style="width: 0%;">
+          <col span="1" style="width: 20%;">
+          <col span="1" style="width: 10%;">
+          <col span="1" style="width: 10%;">
+          <col span="1" style="width: 10%;">
+          <col span="1" style="width: 8%;">
+          <col span="1" style="width: 8%;">
+          <col span="1" style="width: 8%;">
+          <col span="1" style="width: 8%;">
+          <col span="1" style="width: 8%;">
+          <col span="1" style="width: 10%;">
+      </colgroup>
+      <tr>
+        <th style="font-size: 1rem;color:brown">Edit</th>
+        <th style="font-size: 1rem;color:brown">Delete</th>
+        <th style="font-size: 1rem"></th>
+        <th style="font-size: 1rem">Name</th>
+        <th style="font-size: 1rem">Map<br>(Click to view)</th>
+        <th style="font-size: 1rem">Image<br>(Click to view)</th>
+        <th style="font-size: 1rem">Location</th>
+        <th style="font-size: 1rem">Has<br>sockets?</th>
+        <th style="font-size: 1rem">Has<br>toilet?</th>
+        <th style="font-size: 1rem">Has<br>WiFi?</th>
+        <th style="font-size: 1rem">Can take<br>Calls?</th>
+        <th style="font-size: 1rem">Seats</th>
+        <th style="font-size: 1rem">Coffee Price</th>
+      </tr>
+      {% for cafe in cafes %}
+          <tr>
+            <td style="font-size: 1rem"><a href="{{ url_for('edit_cafe', cafe_id=cafe.id) }}"><img src="{{ url_for('static', filename='assets/edit.ico') }}" title="Edit this cafe" width="30rem" height="30rem"></a></td>
+            <td style="font-size: 1rem"><a href="{{ url_for('delete_cafe_confirm', cafe_id=cafe.id) }}"><img src="{{ url_for('static', filename='assets/delete.ico') }}" title="Delete this cafe" width="30rem" height="30rem"></a></td>
+            <td style="font-size: 0rem">{{ cafe.id }}</td>
+            <td style="font-size: 1rem">{{ cafe.name }}</td>
+            <td style="font-size: 1rem"><a href={{cafe.map_url}} rel="noopener">Map</a></td>
+            <td style="font-size: 1rem"><a href={{cafe.img_url}} rel="noopener">Image</a></td>
+            <td style="font-size: 1rem">{{ cafe.location }}</td>
+            <td style="font-size: 1rem">{{ cafe.has_sockets }}</td>
+            <td style="font-size: 1rem">{{ cafe.has_toilet }}</td>
+            <td style="font-size: 1rem">{{ cafe.has_wifi }}</td>
+            <td style="font-size: 1rem">{{ cafe.can_take_calls }}</td>
+            <td style="font-size: 1rem">{{ cafe.seats }}</td>
+            <td style="font-size: 1rem">{{ cafe.coffee_price }}</td>
+          </tr>
+      {% endfor %}
+
+    </table>
+    {% else %}
+        <p style="text-align:center">{{error_msg}}</p>
+    {% endif %}
+    <br>
+    <h5><form>
+         <button style="display: block; margin: auto; background-color:brown; color:white; font-weight:bold" type="submit" formaction="{{url_for('add_cafe')}}"><img src="{{ url_for('static', filename='assets/favicon.ico') }}" width="30rem" height="30rem"> Add New Cafe</button>
+    </form></h5>
+  </main>
+  <footer class="pt-5 my-5 text-body-secondary border-top" style="text-align:center">
+    <p>{{ recognition_web_template }}</p>
+  </footer>
+</div>
+  <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>
+
+
