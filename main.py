@@ -13,7 +13,7 @@ from flask_bootstrap import Bootstrap5
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 import os
-# import requests
+import requests
 import smtplib
 from sqlalchemy import Boolean, Integer, String, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -313,8 +313,10 @@ def add_cafe_via_api():
     # Check if the request method is appropriate:
     if request.method == "POST":
         try:
-            # Store the JSON received into a variable:
-            data_received = request.get_json()
+            # Capture data received from the API request and store in a dictionary:
+            data_received = {}
+            for key in request.form:
+                data_received[key] = request.form[key]
 
         except:
             return jsonify(
@@ -409,8 +411,11 @@ def edit_cafe_via_api():
     # Check if the request method is appropriate:
     if request.method == "POST":
         try:
-            # Store the JSON received into a variable:
-            data_received = request.get_json()
+            # Capture data received from the API request and store in a dictionary:
+            data_received = {}
+            for key in request.form:
+                data_received[key] = request.form[key]
+
 
         except:
             return jsonify(
@@ -448,8 +453,10 @@ def rename_cafe_via_api():
     # Check if the request method is appropriate:
     if request.method == "POST":
         try:
-            # Store the JSON received into a variable:
-            data_received = request.get_json()
+            # Capture data received from the API request and store in a dictionary:
+            data_received = {}
+            for key in request.form:
+                data_received[key] = request.form[key]
 
         except:
             return jsonify(
@@ -519,78 +526,78 @@ def get_cafes_by_location_via_api():
 # # Configure route to test API response to "add cafe" requests:
 # @app.route("/test_add")
 # def test_add():
-#     # Prepare the JSON with data for the new cafe to be added:
-#     body = {
-#         "name": "The other new place in town",
+#     # Prepare the dictionary with data for the new cafe to be added:
+#     data = {
+#         "name": "The other new place in town2",
 #         "map_url": "http://www.zzz.com",
 #         "img_url": "http://www.xxx.com",
-#         "location": "",
-#         "has_sockets": 1,
+#         "location": "Anywhere",
+#         "has_sockets": False,
 #         "has_toilet": False,
 #         "has_wifi": 0,
 #         "can_take_calls": 1,
 #         "seats": "30,000+",
-#         "coffee_price": "$19.87"
+#         "coffee_price": "$50.21"
 #     }
 #
-#     # Store an invalid JSON in the variable to be submitted with the API request:
-#     # body = []
+#     # Store an invalid dictionary in the variable to be submitted with the API request:
+#     # data = []
 #
 #     # Submit the API request:
-#     data = requests.post("http://127.0.0.1:5003/add", json=body)
+#     data = requests.post("http://127.0.0.1:5003/add", data=data)
 #
-#     # Test an API request with a missing JSON:
+#     # Test an API request with a missing data dictionary:
 #     # data = requests.post("http://127.0.0.1:5003/add")
 #
 #     # Return the results:
 #     return data.json()
-
-
+#
+#
 # # Configure route to test API response to "edit cafe" requests:
 # @app.route("/test_edit")
 # def test_edit():
-#     # Prepare the JSON with data for the new cafe to be edited:
-#     body = {
-#         "name": "THE PECKHAM pelican5a",
-#         "map_url": "http://www.mmm.com",
-#         "img_url": "http://www.ppp.com",
-#         "location": "New Jersey",
-#         "has_sockets": 1,
-#         "has_toilet": 0,
-#         "has_wifi": False,
-#         "can_take_calls": True,
-#         "seats": "So many",
-#         "coffee_price": "Expensive"
+#     # Prepare the dictionary with data for the new cafe to be edited:
+#     data = {
+#         "name": "Pizza Village 11",
+#         "map_url": "http://www.ooo.com",
+#         "img_url": "http://www.qqq.com",
+#         "location": "Cleveland",
+#         "has_sockets": 0,
+#         "has_toilet": 1,
+#         "has_wifi": True,
+#         "can_take_calls": False,
+#         "seats": "Enough",
+#         "coffee_price": "Ultra Expensive"
 #     }
 #
 #     # Store an invalid JSON in the variable to be submitted with the API request:
-#     # body = []
+#     # data = []
 #
 #     # Submit the API request:
-#     data = requests.post("http://127.0.0.1:5003/edit", json=body)
+#     data = requests.post("http://127.0.0.1:5003/edit", data=data)
 #
 #     # Test an API request with a missing JSON:
 #     # data = requests.post("http://127.0.0.1:5003/edit")
 #
 #     # Return the results:
 #     return data.json()
-
-
+#
+#
 # # Configure route to test API response to "rename cafe" requests:
 # @app.route("/test_rename")
 # def test_rename():
-#     # Prepare the JSON with data for the new cafe to be added:
-#     body = {
-#         "name_old": "HIS cafe now",
-#         "name_new": "The peckHAM pelican7b",
+#     # Prepare the dictionary with data for the new cafe to be edited:
+#     data = {
+#         "name_old": "pizza village 16",
+#         "name_new": "PIZza village 19",
 #         # "coffee_price": "$3.45"
 #     }
 #
 #     # Store an invalid JSON in the variable to be submitted with the API request:
-#     # body = []
+#     # data = []
 #
 #     # Submit the API request:
-#     data = requests.post("http://127.0.0.1:5003/rename", json=body)
+#     data = requests.post("http://127.0.0.1:5003/rename", data=data)
 #
 #     # Test an API request with a missing JSON:
 #     # data = requests.post("http://127.0.0.1:5003/rename")
@@ -1031,26 +1038,50 @@ def validate_add_from_api(data):
                     resultr={"validation_error": "Field 'img_url' does not resemble a valid URL."})
 
             # FIELD = has_sockets:
+            # Convert string True/False/0/1 to integer equivalents:
+            if data["has_sockets"] == "False" or data["has_sockets"] == "0":
+                data["has_sockets"] = 0
+            elif data["has_sockets"] == "True" or data["has_sockets"] == "1":
+                data["has_sockets"] = 1
+
             # Check if field has a boolean value:
-            if not (int(data["has_sockets"]) == 0 or int(data["has_sockets"]) == 1):
+            if not (data["has_sockets"] == 0 or data["has_sockets"] == 1):
                 return False, jsonify(result={
                     "validation_error": "Field 'has_sockets' must have a value of either 0, 1, False, or True (and without surrounding quotes)."})
 
             # FIELD = has_toilet:
+            # Convert string True/False/0/1 to integer equivalents:
+            if data["has_toilet"] == "False" or data["has_toilet"] == "0":
+                data["has_toilet"] = 0
+            elif data["has_toilet"] == "True" or data["has_toilet"] == "1":
+                data["has_toilet"] = 1
+
             # Check if field has a boolean value:
-            if not (int(data["has_toilet"]) == 0 or int(data["has_toilet"]) == 1):
+            if not (data["has_toilet"] == 0 or data["has_toilet"] == 1):
                 return False, jsonify(result={
                     "validation_error": "Field 'has_toilet' must have a value of either 0, 1, False, or True (and without surrounding quotes)."})
 
             # FIELD = has_wifi:
+            # Convert string True/False/0/1 to integer equivalents:
+            if data["has_wifi"] == "False" or data["has_wifi"] == "0":
+                data["has_wifi"] = 0
+            elif data["has_wifi"] == "True" or data["has_wifi"] == "1":
+                data["has_wifi"] = 1
+
             # Check if field has a boolean value:
-            if not (int(data["has_wifi"]) == 0 or int(data["has_wifi"]) == 1):
+            if not (data["has_wifi"] == 0 or data["has_wifi"] == 1):
                 return False, jsonify(result={
                     "validation_error": "Field 'has_wifi' must have a value of either 0, 1, False, or True (and without surrounding quotes)."})
 
             # FIELD = can_take_calls:
+            # Convert string True/False/0/1 to integer equivalents:
+            if data["can_take_calls"] == "False" or data["can_take_calls"] == "0":
+                data["can_take_calls"] = 0
+            elif data["can_take_calls"] == "True" or data["can_take_calls"] == "1":
+                data["can_take_calls"] = 1
+
             # Check if field has a boolean value:
-            if not (int(data["can_take_calls"]) == 0 or int(data["can_take_calls"]) == 1):
+            if not (data["can_take_calls"] == 0 or data["can_take_calls"] == 1):
                 return False, jsonify(result={
                     "validation_error": "Field 'can_take_calls' must have a value of either 0, 1, False, or True (and without surrounding quotes)."})
 
@@ -1160,29 +1191,53 @@ def validate_edit_from_api(data):
 
             # FIELD = has_sockets:
             if "has_sockets" in data.keys():
+                # Convert string True/False/0/1 to integer equivalents:
+                if data["has_sockets"] == "False" or data["has_sockets"] == "0":
+                    data["has_sockets"] = 0
+                elif data["has_sockets"] == "True" or data["has_sockets"] == "1":
+                    data["has_sockets"] = 1
+
                 # Check if field has a boolean value:
-                if not (int(data["has_sockets"]) == 0 or int(data["has_sockets"]) == 1):
+                if not (data["has_sockets"] == 0 or data["has_sockets"] == 1):
                     return False, jsonify(result={
                         "validation_error": "Field 'has_sockets' must have a value of either 0, 1, False, or True (and without surrounding quotes)."})
 
             # FIELD = has_toilet:
             if "has_toilet" in data.keys():
+                # Convert string True/False/0/1 to integer equivalents:
+                if data["has_toilet"] == "False" or data["has_toilet"] == "0":
+                    data["has_toilet"] = 0
+                elif data["has_toilet"] == "True" or data["has_toilet"] == "1":
+                    data["has_toilet"] = 1
+
                 # Check if field has a boolean value:
-                if not (int(data["has_toilet"]) == 0 or int(data["has_toilet"]) == 1):
+                if not (data["has_toilet"] == 0 or data["has_toilet"] == 1):
                     return False, jsonify(result={
                         "validation_error": "Field 'has_toilet' must have a value of either 0, 1, False, or True (and without surrounding quotes)."})
 
             # FIELD = has_wifi:
             if "has_wifi" in data.keys():
+                # Convert string True/False/0/1 to integer equivalents:
+                if data["has_wifi"] == "False" or data["has_wifi"] == "0":
+                    data["has_wifi"] = 0
+                elif data["has_wifi"] == "True" or data["has_wifi"] == "1":
+                    data["has_wifi"] = 1
+
                 # Check if field has a boolean value:
-                if not (int(data["has_wifi"]) == 0 or int(data["has_wifi"]) == 1):
+                if not (data["has_wifi"] == 0 or data["has_wifi"] == 1):
                     return False, jsonify(result={
                         "validation_error": "Field 'has_wifi' must have a value of either 0, 1, False, or True (and without surrounding quotes)."})
 
             # FIELD = can_take_calls:
             if "can_take_calls" in data.keys():
+                # Convert string True/False/0/1 to integer equivalents:
+                if data["can_take_calls"] == "False" or data["can_take_calls"] == "0":
+                    data["can_take_calls"] = 0
+                elif data["can_take_calls"] == "True" or data["can_take_calls"] == "1":
+                    data["can_take_calls"] = 1
+
                 # Check if field has a boolean value:
-                if not (int(data["can_take_calls"]) == 0 or int(data["can_take_calls"]) == 1):
+                if not (data["can_take_calls"] == 0 or data["can_take_calls"] == 1):
                     return False, jsonify(result={
                         "validation_error": "Field 'can_take_calls' must have a value of either 0, 1, False, or True (and without surrounding quotes)."})
 
@@ -1251,6 +1306,10 @@ def validate_rename_from_api(data):
             elif cafe_name_in_db == None:
                 return False, jsonify(result={
                     "validation_error": f"Cafe name '{data["name_old"]}' does not exist in the database."})
+            else:
+                # Capture ID tied to old cafe name:
+                id_old_cafe_name = cafe_name_in_db.id
+                print(id_old_cafe_name)
 
             # FIELD = name_new:
             # Check if field is of length > 0 and <= 250:
@@ -1264,8 +1323,9 @@ def validate_rename_from_api(data):
                 return False, jsonify(
                     result={"validation_error": "An error has occurred in validating fields for API request."})
             elif cafe_name_in_db != None:
-                return False, jsonify(result={
-                    "validation_error": f"Cafe name '{data["name_new"]}' already exists in the database."})
+                if cafe_name_in_db.id != id_old_cafe_name:  # Record is not the same as the one targeted for editing.
+                    return False, jsonify(result={
+                        "validation_error": f"Cafe name '{data["name_new"]}' already exists in the database."})
 
             # At this point, validation is deemed to have passed all validation checks.
             # Return successful-validation indication to the calling function
